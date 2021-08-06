@@ -1,38 +1,31 @@
-import matplotlib
-from numpy.lib.npyio import save
 from birdsongs_nopath import *
-import sys
-from io import BytesIO
 
 
 ## CREATE SEPARATE PROGRAM TO BUILD IMAGE DATASET
 
 
 def load_data(directory):
-    # loads directory
+    # loads directory. assumes directory of audio files. returns new directory of png files as "{original filename.extension}.png".
+    
+    # get working dir  
+    wd = os.getcwd()
 
+    # set up error catching
     fail = False
     errors = 0
-    for (root,dirs,files) in os.walk(directory, topdown=True):
-        # for dir in dirs:
-        #     print(dir)
-        #     os.chdir(os.path.join(root, dir))
-            # for (root,dirs,files) in os.walk(os.path.join(root, dir), topdown=True):
-        # print(files)
+
+    # walk through files
+    for (root,dirs,files) in os.walk(directory, topdown=True):        
         for file in files:
+            # send path to spectrogram function
             path = os.path.join(root, file)
-            print(path)
             canvas = audio_to_image(path)
-            
-            # img = cv2.imread(os.path.join(root, filename_img), cv2.IMREAD_UNCHANGED)
+            # if spectrogram
             if canvas is not None:
-                
-                # file_img = cv2.imread(png, cv2.IMREAD_UNCHANGED)
-                # cv2.imshow('image', file_img)
-                # cv2.waitKey(0)
-                # resized = cv2.resize(file_img, (30, 30))
+                # set path/name for new file
                 save_path = os.path.join(os.path.split(root)[1])                
                 filename = f"{file}.png"
+                # change working directory into new file location
                 try:
                     os.chdir('new_dataset')
                 except FileNotFoundError:
@@ -44,12 +37,23 @@ def load_data(directory):
                     except FileNotFoundError:
                         os.mkdir(save_path)
                         os.chdir(save_path)
+                # save file
                 png_output = filename
                 canvas.print_png(png_output)
+                plt.clf()
+                plt.close()
+                print(filename)
+                
+                # restore working dir
+                os.chdir(wd)
+            
+            # catch errors if canvas is None
             else:
                 print("No image returned.")
                 fail = True
                 errors += 1
+    
+    # print success/fail message
     if fail == False:
         print("Data successfully loaded.")
     else:
@@ -58,18 +62,16 @@ def load_data(directory):
 def audio_to_image(file):
     # converts audio file into spectrogram image.
     # assumes data is an audio file. returns corresponding spectrogram.
-    try:
-        clip, sr = librosa.load(file)
-        S = librosa.stft(clip)
-        S_db = librosa.amplitude_to_db(np.abs(S),ref=np.max)
-        fig = plt.figure()
-        canvas = FC(fig)
-        librosa.display.specshow(S_db)
-        # png_output = 'test.png'
-        # image = canvas.print_png(png_output)
-    except FileNotFoundError:
-        print(f'File not found: {file}')
-        return None
+
+    # load file into librosa
+    clip, sr = librosa.load(file)
+    S = librosa.stft(clip)
+    S_db = librosa.amplitude_to_db(np.abs(S),ref=np.max)
+    
+    # initialize matplotlab
+    fig = plt.figure()
+    canvas = FC(fig)
+    librosa.display.specshow(S_db)
     return canvas
 
 def main():

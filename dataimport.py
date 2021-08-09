@@ -1,4 +1,4 @@
-from birdsongs_nopath import *
+from birdsongs import *
 
 
 ## CREATE SEPARATE PROGRAM TO BUILD IMAGE DATASET

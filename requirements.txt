@@ -1,0 +1,6 @@
+librosa
+tensorflow
+ffmpeg
+opencv-python
+scikit-learn
+matplotlib

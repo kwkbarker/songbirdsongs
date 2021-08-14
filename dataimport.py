@@ -17,6 +17,8 @@ def load_data(directory):
     # walk through files
     for (root,dirs,files) in os.walk(directory, topdown=True):        
         for file in files:
+            if file == '.DS_Store':
+                continue
             # send path to spectrogram function
             path = os.path.join(root, file)
             canvas = audio_to_image(path)

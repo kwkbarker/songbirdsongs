@@ -4,7 +4,7 @@ import librosa.display
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
-from tensorflow.python.keras.backend import relu
+from tensorflow.python.keras.backend import dropout, relu
 from tensorflow.python.keras.layers.convolutional import Convolution2D
 from tensorflow.python.keras.layers.core import Dropout
 from tensorflow.python.keras.layers.pooling import MaxPool2D
@@ -15,9 +15,9 @@ import cv2
 import os
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FC
+from addbird import load_labels
 
-
-TEST_SIZE = 0.2
+TEST_SIZE = 0.3
 EPOCHS = 10
 IMG_HEIGHT = 48
 IMG_WIDTH = 64
@@ -74,15 +74,17 @@ def get_model():
         tf.keras.layers.MaxPool2D(pool_size=(2,2)),
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(1024, activation="relu"),
-        tf.keras.layers.Dense(128, activation="relu"),
-        tf.keras.layers.Dense(128, activation="relu"),
-        tf.keras.layers.Dense(128, activation="relu"),
-        tf.keras.layers.Dense(128, activation="relu"),
-        tf.keras.layers.Dense(128, activation="relu"),
-        tf.keras.layers.Dense(128, activation="relu"),
-        tf.keras.layers.Dense(128, activation="relu"),
-        tf.keras.layers.Dense(128, activation="relu"),
+        # tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(1024, activation="relu"),
         tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(128, activation="relu"),
+        tf.keras.layers.Dense(128, activation="relu"),
+        tf.keras.layers.Dense(128, activation="relu"),
+        tf.keras.layers.Dense(128, activation="relu"),
+        tf.keras.layers.Dense(128, activation="relu"),
+        tf.keras.layers.Dense(128, activation="relu"),
+        tf.keras.layers.Dense(128, activation="relu"),
+        tf.keras.layers.Dense(128, activation="relu"),
         tf.keras.layers.Dense(NUM_CATEGORIES, activation="sigmoid")
     ])
 
